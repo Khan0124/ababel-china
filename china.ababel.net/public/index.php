@@ -126,12 +126,20 @@ $routes = [
         '/transactions' => 'TransactionController@index',
         '/transactions/create' => 'TransactionController@create',
         '/transactions/view/{id}' => 'TransactionController@show',
-        '/transactions/approve/{id}' => 'TransactionController@showApprove', // GET approval page
-        '/transactions/search-by-claim' => 'TransactionController@searchByClaim', // AJAX endpoint
+        '/transactions/approve/{id}' => 'TransactionController@showApprove',
+        '/transactions/search-by-claim' => 'TransactionController@searchByClaim',
         
         // Cashbox
         '/cashbox' => 'CashboxController@index',
         '/cashbox/movement' => 'CashboxController@movement',
+        '/cashbox/convert' => 'CashboxCurrencyController@index',
+        
+        // Exchange rates
+        '/exchange-rates' => 'ExchangeRateController@index',
+        '/exchange-rates/calculator' => 'ExchangeRateController@calculator',
+        '/exchange-rates/get' => 'ExchangeRateController@getCurrentRate',
+        '/exchange-rates/history' => 'ExchangeRateController@getRateHistory',
+        '/exchange-rates/report' => 'ExchangeRateController@generateReport',
         
         // Reports
         '/reports/daily' => 'ReportController@daily',
@@ -156,7 +164,7 @@ $routes = [
         '/clients/make-payment' => 'ClientController@makePayment',
         '/transactions/create' => 'TransactionController@create',
         '/transactions/approve/{id}' => 'TransactionController@approve',
-        '/transactions/process-payment' => 'TransactionController@processPayment', // AJAX endpoint
+        '/transactions/process-payment' => 'TransactionController@processPayment',
         '/cashbox/movement' => 'CashboxController@movement',
         '/settings/save' => 'SettingsController@save',
         '/api/sync/retry/{id}' => 'Api\\SyncController@retry',
@@ -164,6 +172,11 @@ $routes = [
         '/api/sync/webhook' => 'Api\\SyncController@webhook',
         '/api/sync/loading/{id}' => 'Api\\SyncController@syncLoading',
         '/api/sync/bol/{id}' => 'Api\\SyncController@updateBol',
+        // Exchange rates
+        '/exchange-rates/update' => 'ExchangeRateController@updateRate',
+        '/exchange-rates/auto-update' => 'ExchangeRateController@autoUpdate',
+        // Cashbox conversions
+        '/cashbox/convert' => 'CashboxCurrencyController@convert',
         // Loadings
         '/loadings/create' => 'LoadingController@create',
         '/loadings/edit/{id}' => 'LoadingController@edit',
