@@ -223,49 +223,62 @@ class LoadingController extends Controller
                 'updated_by' => $_SESSION['user_id']
             ];
             
-            // بعد السطر: $data = $this->prepareLoadingData($_POST);
-// أضف معالجة رفع الملف
+            // معالجة رفع ملف BOL
+            if (isset($_FILES['bol_file']) && $_FILES['bol_file']['error'] === UPLOAD_ERR_OK) {
+                $uploadDir = __DIR__ . '/../../public/uploads/bol/';
+                
+                // إنشاء المجلد إذا لم يكن موجوداً
+                if (!is_dir($uploadDir)) {
+                    mkdir($uploadDir, 0755, true);
+                }
+                
+                // Size limit 10MB
+                if (($_FILES['bol_file']['size'] ?? 0) > 10 * 1024 * 1024) {
+                    $this->redirect('/loadings/edit/' . $id . '?error=' . urlencode('الملف كبير للغاية. الحد الأقصى 10MB'));
+                    return;
+                }
 
-// معالجة رفع ملف BOL
-if (isset($_FILES['bol_file']) && $_FILES['bol_file']['error'] === UPLOAD_ERR_OK) {
-    $uploadDir = __DIR__ . '/../../public/uploads/bol/';
-    
-    // إنشاء المجلد إذا لم يكن موجوداً
-    if (!is_dir($uploadDir)) {
-        mkdir($uploadDir, 0777, true);
-    }
-    
-    $fileInfo = pathinfo($_FILES['bol_file']['name']);
-    $fileName = 'bol_' . $id . '_' . time() . '.' . $fileInfo['extension'];
-    $targetFile = $uploadDir . $fileName;
-    
-    // التحقق من نوع الملف
-    $allowedTypes = ['pdf', 'jpg', 'jpeg', 'png'];
-    if (!in_array(strtolower($fileInfo['extension']), $allowedTypes)) {
-        $this->redirect('/loadings/edit/' . $id . '?error=' . 
-            urlencode('نوع الملف غير مسموح. يُسمح فقط بـ PDF, JPG, PNG'));
-        return;
-    }
-    
-    if (move_uploaded_file($_FILES['bol_file']['tmp_name'], $targetFile)) {
-        $data['bill_of_lading_file'] = 'uploads/bol/' . $fileName;
-        
-        // حذف الملف القديم إذا وجد
-        if (!empty($loading['bill_of_lading_file']) && 
-            file_exists(__DIR__ . '/../../public/' . $loading['bill_of_lading_file'])) {
-            unlink(__DIR__ . '/../../public/' . $loading['bill_of_lading_file']);
-        }
-    }
-}
-
-// معالجة تحديث حالة BOL
-if (isset($_POST['bol_status'])) {
-    $data['bill_of_lading_status'] = $_POST['bol_status'];
-}
-
-if (isset($_POST['bol_date'])) {
-    $data['bill_of_lading_date'] = $_POST['bol_date'];
-}
+                $fileInfo = pathinfo($_FILES['bol_file']['name']);
+                $ext = strtolower($fileInfo['extension'] ?? '');
+                $fileName = 'bol_' . $id . '_' . time() . '.' . $ext;
+                $targetFile = $uploadDir . $fileName;
+                
+                // التحقق من نوع الملف
+                $allowedTypes = ['pdf', 'jpg', 'jpeg', 'png'];
+                if (!in_array($ext, $allowedTypes)) {
+                    $this->redirect('/loadings/edit/' . $id . '?error=' . 
+                        urlencode('نوع الملف غير مسموح. يُسمح فقط بـ PDF, JPG, PNG'));
+                    return;
+                }
+                
+                // Basic MIME check
+                $finfo = new \finfo(FILEINFO_MIME_TYPE);
+                $mime = $finfo->file($_FILES['bol_file']['tmp_name']);
+                $allowedMimes = ['application/pdf', 'image/jpeg', 'image/png'];
+                if (!in_array($mime, $allowedMimes)) {
+                    $this->redirect('/loadings/edit/' . $id . '?error=' . urlencode('نوع الملف غير صالح.'));
+                    return;
+                }
+                
+                if (move_uploaded_file($_FILES['bol_file']['tmp_name'], $targetFile)) {
+                    $data['bill_of_lading_file'] = 'uploads/bol/' . $fileName;
+                    
+                    // حذف الملف القديم إذا وجد
+                    if (!empty($originalLoading['bill_of_lading_file']) && 
+                        file_exists(__DIR__ . '/../../public/' . $originalLoading['bill_of_lading_file'])) {
+                        unlink(__DIR__ . '/../../public/' . $originalLoading['bill_of_lading_file']);
+                    }
+                }
+            }
+            
+            // معالجة تحديث حالة BOL
+            if (isset($_POST['bol_status'])) {
+                $data['bill_of_lading_status'] = $_POST['bol_status'];
+            }
+            
+            if (isset($_POST['bol_date'])) {
+                $data['bill_of_lading_date'] = $_POST['bol_date'];
+            }
             
             // Check if financial amounts changed and update client balance accordingly
             $this->adjustClientBalanceOnUpdate($originalLoading, $data, $client['id']);
@@ -535,11 +548,12 @@ if (isset($_POST['bol_date'])) {
         error_log("Data: " . json_encode($data));
         
         try {
-            // Use the china_sync.php endpoint
-            $apiUrl = 'https://ababel.net/app/api/china_sync.php' . $endpoint;
+            // Build API URL from configuration
+            $baseUrl = rtrim(\config('port_sudan_api_url', 'https://ababel.net/app/api/china_sync.php'), '/');
+            $apiUrl = $baseUrl . $endpoint;
             
             // Get API key from config (should be in environment variable in production)
-            $apiKey = defined('PORT_SUDAN_API_KEY') ? PORT_SUDAN_API_KEY : 'AB@1234X-China2Port!';
+            $apiKey = \config('port_sudan_api_key', '');
             
             $postData = json_encode($data);
             
@@ -1067,8 +1081,8 @@ private function triggerSync($loadingId)
         $settings[$row['setting_key']] = $row['setting_value'];
     }
     
-    $apiUrl = $settings['port_sudan_api_url'] ?? '';
-    $apiKey = $settings['port_sudan_api_key'] ?? '';
+    $apiUrl = $settings['port_sudan_api_url'] ?? \config('port_sudan_api_url', '');
+    $apiKey = $settings['port_sudan_api_key'] ?? \config('port_sudan_api_key', '');
     
     if (empty($apiUrl) || empty($apiKey)) {
         throw new \Exception('API settings not configured');
@@ -1080,14 +1094,14 @@ private function triggerSync($loadingId)
     curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($syncData));
     curl_setopt($ch, CURLOPT_HTTPHEADER, [
         'Content-Type: application/json',
-        'X-API: ' . $apiKey
+        'X-API-Key: ' . $apiKey
     ]);
     
     $response = curl_exec($ch);
     $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     curl_close($ch);
     
-    $db->query("INSERT INTO api_sync_log (endpoint, method, china_loading_id, GAL_ request_data, response_code, response_data) VALUES (?, ?, ?, ?, ?, ?)", [
+    $db->query("INSERT INTO api_sync_log (endpoint, method, china_loading_id, request_data, response_code, response_data) VALUES (?, ?, ?, ?, ?, ?)", [
         $apiUrl,
         'POST',
         $loadingId,

@@ -1,7 +1,7 @@
 <?php
 // app/Views/layouts/header.php
 // Load Language class if not already loaded
-if (!class_exists('App\Core\Language')) {
+if (!class_exists('App\\Core\\Language')) {
     require_once BASE_PATH . '/app/Core/Language.php';
 }
 
@@ -88,6 +88,11 @@ $currentLang = lang(); // Use the global function
                         </a>
                     </li>
                     <li class="nav-item">
+                        <a class="nav-link <?= strpos($_SERVER['REQUEST_URI'], '/dashboard/enhanced') !== false ? 'active' : '' ?>" href="/dashboard/enhanced">
+                            <i class="bi bi-graph-up"></i> Enhanced
+                        </a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link <?= strpos($_SERVER['REQUEST_URI'], '/clients') !== false ? 'active' : '' ?>" href="/clients">
                             <i class="bi bi-people"></i> <?= __('nav.clients') ?>
                         </a>
@@ -129,7 +134,14 @@ $currentLang = lang(); // Use the global function
                             <li><a class="dropdown-item" href="/reports/monthly"><?= __('reports.monthly_report') ?></a></li>
                             <li><a class="dropdown-item" href="/reports/clients"><?= __('reports.client_report') ?></a></li>
                             <li><a class="dropdown-item" href="/reports/cashbox"><?= __('reports.cashbox_report') ?></a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="/export/transactions"><i class="bi bi-file-earmark-spreadsheet"></i> <?= __('export') ?> <?= __('transactions.title') ?></a></li>
                         </ul>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link <?= strpos($_SERVER['REQUEST_URI'], '/users') !== false ? 'active' : '' ?>" href="/users">
+                            <i class="bi bi-person-badge"></i> Users
+                        </a>
                     </li>
                 </ul>
                 

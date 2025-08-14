@@ -22,6 +22,7 @@ $isEdit = isset($client);
                     <?php endif; ?>
                     
                     <form method="POST" action="<?= $isEdit ? '/clients/edit/' . $client['id'] : '/clients/create' ?>">
+                        <?= csrf_field() ?>
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 <label for="client_code" class="form-label">

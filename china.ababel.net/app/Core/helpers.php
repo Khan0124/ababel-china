@@ -82,3 +82,42 @@ if (!function_exists('url')) {
         return $baseUrl . '/' . ltrim($path, '/');
     }
 }
+
+if (!function_exists('csrf_field')) {
+    function csrf_field(): string
+    {
+        return \App\Core\Csrf::field();
+    }
+}
+
+if (!function_exists('send_security_headers')) {
+    function send_security_headers(): void
+    {
+        // Basic secure headers
+        header('X-Content-Type-Options: nosniff');
+        header('X-Frame-Options: SAMEORIGIN');
+        header('Referrer-Policy: no-referrer-when-downgrade');
+        header('X-XSS-Protection: 0');
+        // Optional CSP: adjust as needed for assets
+        $csp = "default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'";
+        header('Content-Security-Policy: ' . $csp);
+    }
+}
+
+if (!function_exists('harden_session_cookies')) {
+    function harden_session_cookies(): void
+    {
+        if (PHP_SAPI === 'cli') {
+            return;
+        }
+        $params = session_get_cookie_params();
+        session_set_cookie_params([
+            'lifetime' => $params['lifetime'],
+            'path' => $params['path'],
+            'domain' => $params['domain'],
+            'secure' => (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || ($_SERVER['SERVER_PORT'] ?? '80') == '443',
+            'httponly' => true,
+            'samesite' => 'Lax',
+        ]);
+    }
+}

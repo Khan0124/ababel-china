@@ -28,12 +28,12 @@ class SyncService
         // Get API URL from settings
         $stmt = $this->db->query("SELECT setting_value FROM settings WHERE setting_key = 'port_sudan_api_url'");
         $result = $stmt->fetch();
-        $this->portSudanApiUrl = $result ? $result['setting_value'] : 'https://ababel.net/app/api/china_sync.php';
+        $this->portSudanApiUrl = $result ? $result['setting_value'] : (\config('port_sudan_api_url', 'https://ababel.net/app/api/china_sync.php'));
         
         // Get API Key from settings
         $stmt = $this->db->query("SELECT setting_value FROM settings WHERE setting_key = 'port_sudan_api_key'");
         $result = $stmt->fetch();
-        $this->apiKey = $result ? $result['setting_value'] : 'AB@1234X-China2Port!';
+        $this->apiKey = $result ? $result['setting_value'] : (\config('port_sudan_api_key', ''));
     }
     
     /**
@@ -163,14 +163,14 @@ class SyncService
         $curlOptions = [
             CURLOPT_URL => $url,
             CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_TIMEOUT => 30,
+            CURLOPT_TIMEOUT => intval(getenv('SYNC_HTTP_TIMEOUT') ?: 30),
             CURLOPT_HTTPHEADER => [
                 'Content-Type: application/json',
                 'Accept: application/json',
                 'X-API-Key: ' . $this->apiKey
             ],
-            CURLOPT_SSL_VERIFYPEER => false,
-            CURLOPT_SSL_VERIFYHOST => false
+            CURLOPT_SSL_VERIFYPEER => (bool) (getenv('SYNC_SSL_VERIFY') ?: false),
+            CURLOPT_SSL_VERIFYHOST => (bool) (getenv('SYNC_SSL_VERIFY') ?: false),
         ];
         
         // Method-specific options
@@ -381,7 +381,7 @@ class SyncService
      */
     public function getSyncStatistics($dateFrom = null, $dateTo = null)
     {
-        $whereClause = "WHERE endpoint LIKE '/china_sync%'";
+        $whereClause = "WHERE 1=1";
         $params = [];
         
         if ($dateFrom) {

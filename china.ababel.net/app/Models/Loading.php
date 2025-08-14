@@ -183,7 +183,11 @@ class Loading extends Model
             'shipping_date', 'loading_no', 'container_no', 'client_id', 
             'client_code', 'client_name', 'item_description', 'cartons_count',
             'purchase_amount', 'commission_amount', 'total_amount', 'shipping_usd',
-            'total_with_shipping', 'office', 'notes', 'status', 'updated_by'
+            'total_with_shipping', 'office', 'notes', 'status', 'updated_by',
+            // BOL and sync related fields
+            'bill_of_lading_status', 'bill_of_lading_date', 'bill_of_lading_file',
+            'arrival_date', 'bol_number', 'bol_issued_date', 'bol_issued_by',
+            'sync_status', 'last_sync_at', 'sync_attempts', 'port_sudan_id'
         ];
         
         foreach ($data as $field => $value) {
@@ -228,7 +232,10 @@ class Loading extends Model
                     'client_id', 'client_code', 'client_name', 'item_description',
                     'cartons_count', 'purchase_amount', 'commission_amount', 'total_amount',
                     'shipping_usd', 'total_with_shipping', 'office', 'notes', 'status',
-                    'created_by', 'updated_by', 'created_at', 'updated_at'
+                    'created_by', 'updated_by', 'created_at', 'updated_at',
+                    'bill_of_lading_status', 'bill_of_lading_date', 'bill_of_lading_file',
+                    'arrival_date', 'bol_number', 'bol_issued_date', 'bol_issued_by',
+                    'sync_status', 'last_sync_at', 'sync_attempts', 'port_sudan_id'
                 ];
             }
         }
@@ -469,28 +476,42 @@ class Loading extends Model
     }
     
     /**
- * Update BOL status
- */
-public function updateBolStatus($id, $status, $date = null, $file = null)
-{
-    $fields = ['bill_of_lading_status = ?'];
-    $params = [$status];
-    
-    if ($date !== null) {
-        $fields[] = 'bill_of_lading_date = ?';
-        $params[] = $date;
+     * Update BOL status
+     */
+    public function updateBolStatus($id, $status, $date = null, $file = null)
+    {
+        $fields = ['bill_of_lading_status = ?'];
+        $params = [$status];
+        
+        if ($date !== null) {
+            $fields[] = 'bill_of_lading_date = ?';
+            $params[] = $date;
+        }
+        
+        if ($file !== null) {
+            $fields[] = 'bill_of_lading_file = ?';
+            $params[] = $file;
+        }
+        
+        $fields[] = 'updated_at = NOW()';
+        $params[] = $id;
+        
+        $sql = "UPDATE {$this->table} SET " . implode(', ', $fields) . " WHERE id = ?";
+        
+        return $this->db->query($sql, $params);
     }
     
-    if ($file !== null) {
-        $fields[] = 'bill_of_lading_file = ?';
-        $params[] = $file;
+    /**
+     * Get loadings pending sync to Port Sudan
+     */
+    public function getPendingPortSudanSync($limit = 100)
+    {
+        $sql = "SELECT * FROM {$this->table}
+                WHERE office = 'port_sudan'
+                AND (sync_status IS NULL OR sync_status = 'failed' OR sync_status = 'pending')
+                ORDER BY id ASC
+                LIMIT " . intval($limit);
+        $stmt = $this->db->query($sql);
+        return $stmt->fetchAll();
     }
-    
-    $fields[] = 'updated_at = NOW()';
-    $params[] = $id;
-    
-    $sql = "UPDATE {$this->table} SET " . implode(', ', $fields) . " WHERE id = ?";
-    
-    return $this->db->query($sql, $params);
-  }
 }

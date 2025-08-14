@@ -101,6 +101,7 @@ $isRTL = in_array($currentLang, ['ar', 'fa', 'he', 'ur']);
         <?php endif; ?>
         
         <form method="POST" action="/login">
+            <?= csrf_field() ?>
             <div class="mb-3">
                 <label for="username" class="form-label"><?= __('login.username') ?></label>
                 <div class="input-group">

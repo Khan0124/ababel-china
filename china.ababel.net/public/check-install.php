@@ -1,5 +1,11 @@
 <?php
 // check-install.php - Upload this to your public directory and run it
+// Restrict to CLI to prevent public exposure
+if (php_sapi_name() !== 'cli') {
+    http_response_code(403);
+    exit('Forbidden');
+}
+
 echo "<h1>China Accounting System - Installation Checker</h1>";
 
 // Check PHP version

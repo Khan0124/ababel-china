@@ -29,6 +29,11 @@ abstract class Controller
         echo json_encode($data);
         exit;
     }
+
+    protected function jsonResponse($data)
+    {
+        return $this->json($data);
+    }
     
     protected function isPost()
     {

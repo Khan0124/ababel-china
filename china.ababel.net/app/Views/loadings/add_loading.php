@@ -54,6 +54,7 @@ $offices = [
                     <?php endif; ?>
                     
                     <form method="POST" action="/loadings/create" id="loading-form">
+                        <?= csrf_field() ?>
                         
                         <!-- Basic Information Card -->
                         <div class="card mb-4">

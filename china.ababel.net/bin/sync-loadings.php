@@ -1,15 +1,44 @@
-<?php
-// bin/sync-loadings.php
 #!/usr/bin/env php
 <?php
 /**
  * CLI script for syncing loadings to Port Sudan
- * Usage: php bin/sync-loadings.php [--all] [--loading-id=123] [--retry-failed]
+ * Usage:
+ *   php bin/sync-loadings.php [--all] [--loading-id=123] [--retry-failed] [--help]
  */
 
-// Set up environment
+if (php_sapi_name() !== 'cli') {
+    fwrite(STDERR, "This script must be run from CLI.\n");
+    exit(1);
+}
+
 define('BASE_PATH', dirname(__DIR__));
-require_once BASE_PATH . '/app/Core/bootstrap.php';
+
+// Composer autoload (vendor)
+$vendorAutoload = BASE_PATH . '/vendor/autoload.php';
+if (file_exists($vendorAutoload)) {
+    require_once $vendorAutoload;
+}
+
+// Simple PSR-4 autoloader for App\
+spl_autoload_register(function ($class) {
+    $prefix = 'App\\';
+    $baseDir = BASE_PATH . '/app/';
+    $len = strlen($prefix);
+    if (strncmp($prefix, $class, $len) !== 0) {
+        return;
+    }
+    $relativeClass = substr($class, $len);
+    $file = $baseDir . str_replace('\\', '/', $relativeClass) . '.php';
+    if (file_exists($file)) {
+        require $file;
+    }
+});
+
+// Load helpers (config, __, etc.)
+$helpersFile = BASE_PATH . '/app/Core/helpers.php';
+if (file_exists($helpersFile)) {
+    require_once $helpersFile;
+}
 
 use App\Services\SyncService;
 use App\Models\Loading;
@@ -35,7 +64,7 @@ try {
         if ($result['success']) {
             echo "✅ Success: " . $result['message'] . "\n";
         } else {
-            echo "❌ Failed: " . $result['message'] . "\n";
+            echo "❌ Failed: " . ($result['message'] ?? 'Unknown error') . "\n";
             exit(1);
         }
         
@@ -53,11 +82,11 @@ try {
             
             try {
                 $result = $syncService->retryFailedSync($loading['id']);
-                if ($result['success']) {
+                if ($result['success'] ?? false) {
                     echo "✅ Success\n";
                     $successCount++;
                 } else {
-                    echo "❌ Failed: " . $result['message'] . "\n";
+                    echo "❌ Failed: " . ($result['message'] ?? 'Unknown error') . "\n";
                 }
             } catch (Exception $e) {
                 echo "❌ Error: " . $e->getMessage() . "\n";
@@ -78,7 +107,7 @@ try {
         $failCount = 0;
         
         foreach ($results as $result) {
-            $status = $result['status'] === 'success' ? '✅' : '❌';
+            $status = ($result['status'] === 'success') ? '✅' : '❌';
             echo "{$status} Loading {$result['loading_id']}: {$result['message']}\n";
             
             if ($result['status'] === 'success') {

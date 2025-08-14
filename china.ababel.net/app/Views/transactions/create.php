@@ -45,6 +45,7 @@ $banksList = array_map('trim', $banksList);
                     <?php endif; ?>
                     
                     <form method="POST" action="/transactions/create" id="transaction-form">
+                        <?= csrf_field() ?>
                         <!-- Basic Information -->
                         <div class="row mb-3">
                             <div class="col-md-4">

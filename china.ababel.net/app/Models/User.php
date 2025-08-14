@@ -10,7 +10,8 @@ class User extends Model
     
     public function findByUsername($username)
     {
-        $sql = "SELECT * FROM {$this->table} WHERE username = ? AND is_active = 1";
+        // Support both legacy is_active=1 and status='active'
+        $sql = "SELECT * FROM {$this->table} WHERE username = ? AND (is_active = 1 OR status = 'active' OR status IS NULL)";
         $stmt = $this->db->query($sql, [$username]);
         return $stmt->fetch();
     }
