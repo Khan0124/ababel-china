@@ -16,7 +16,27 @@ ini_set('log_errors', 1);
 // Use system default error log for now
 ini_set('error_log', '/tmp/php_errors.log');
 
+// Load helper functions early
+$helpersFile = BASE_PATH . '/app/Core/helpers.php';
+if (file_exists($helpersFile)) {
+    require_once $helpersFile;
+}
+
+// Harden session cookies before starting session
+if (function_exists('harden_session_cookies')) {
+    harden_session_cookies();
+}
+
 session_start();
+
+// Register global error/exception handler
+require_once BASE_PATH . '/app/Core/ErrorHandler.php';
+\App\Core\ErrorHandler::register();
+
+// Send security headers
+if (function_exists('send_security_headers')) {
+    send_security_headers();
+}
 
 // Simple autoloader
 spl_autoload_register(function ($class) {
@@ -36,21 +56,11 @@ spl_autoload_register(function ($class) {
     }
 });
 
-// Load helper functions - IMPORTANT: Load this early!
-$helpersFile = BASE_PATH . '/app/Core/helpers.php';
-if (file_exists($helpersFile)) {
-    require_once $helpersFile;
-} else {
-    // If helpers file doesn't exist, create minimal functions
-    function __($key, $params = []) {
-        return $key; // Return key as fallback
-    }
-    function lang() {
-        return $_SESSION['lang'] ?? 'ar';
-    }
-    function isRTL() {
-        return in_array(lang(), ['ar', 'fa', 'he', 'ur']);
-    }
+// Load helper functions fallback
+if (!function_exists('__')) {
+    function __($key, $params = []) { return $key; }
+    function lang() { return $_SESSION['lang'] ?? 'ar'; }
+    function isRTL() { return in_array(lang(), ['ar', 'fa', 'he', 'ur']); }
 }
 
 // Check if config files exist
@@ -59,10 +69,14 @@ if (!file_exists($configFile)) {
     die("Error: Configuration file not found at: $configFile");
 }
 
-// Check if language files exist
-$langDir = BASE_PATH . '/lang';
-if (!is_dir($langDir)) {
-    mkdir($langDir, 0755, true);
+// Ensure CSRF for POST
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    require_once BASE_PATH . '/app/Core/Csrf.php';
+    if (!\App\Core\Csrf::validate()) {
+        http_response_code(419);
+        echo 'CSRF token mismatch';
+        exit;
+    }
 }
 
 // Load configuration
