@@ -61,7 +61,7 @@ include __DIR__ . '/../layouts/header.php';
                 </div>
                 <div class="card-body">
                     <form id="conversionForm">
-                        <input type="hidden" name="_csrf_token" value="<?= CSRF::generate() ?>">
+                        <?= csrf_field() ?>
                         
                         <div class="row">
                             <div class="col-md-6">

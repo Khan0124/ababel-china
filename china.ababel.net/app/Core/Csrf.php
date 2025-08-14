@@ -27,7 +27,7 @@ class Csrf
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             return true; // Only POSTs are checked here
         }
-        $sent = $_POST['_csrf'] ?? $_SERVER['HTTP_X_CSRF_TOKEN'] ?? '';
+        $sent = $_POST['_csrf'] ?? $_POST['_csrf_token'] ?? $_SERVER['HTTP_X_CSRF_TOKEN'] ?? '';
         return hash_equals($_SESSION[self::TOKEN_KEY] ?? '', $sent);
     }
 }

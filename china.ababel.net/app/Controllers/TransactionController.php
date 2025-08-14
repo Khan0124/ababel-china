@@ -319,7 +319,7 @@ class TransactionController extends Controller
     }
 
     /**
-     * AJAX: Process partial payment for a transaction
+     * AJAX: Process partial payment for a transaction (simple)
      */
     public function processPayment()
     {
@@ -335,5 +335,154 @@ class TransactionController extends Controller
         }
         $result = $this->transactionModel->processPartialPayment($transactionId, $paymentCurrency, $paymentAmount, $bankName, $_SESSION['user_id']);
         return $this->json($result);
+    }
+
+    /**
+     * Show partial payment form
+     */
+    public function showPartialPayment($id)
+    {
+        $transaction = $this->transactionModel->getWithDetails($id);
+        
+        if (!$transaction) {
+            $this->redirect('/transactions?error=' . urlencode(__('messages.transaction_not_found')));
+        }
+        
+        // Only allow partial payment for unpaid claims (expense transactions with balance)
+        if ($transaction['transaction_type_id'] != 1 ||
+            ($transaction['balance_rmb'] <= 0 && $transaction['balance_usd'] <= 0 && 
+             ($transaction['balance_sdg'] ?? 0) <= 0 && ($transaction['balance_aed'] ?? 0) <= 0)) {
+            $this->redirect('/transactions/view/' . $id . '?error=' . urlencode(__('messages.no_balance_to_pay')));
+        }
+        
+        // Get banks list
+        $db = \App\Core\Database::getInstance();
+        $stmt = $db->query("SELECT setting_value FROM settings WHERE setting_key = 'banks_list'");
+        $banksResult = $stmt->fetch();
+        $banksList = $banksResult ? explode(',', $banksResult['setting_value']) : [];
+        $banksList = array_map('trim', $banksList);
+        
+        $this->view('transactions/partial_payment', [
+            'title' => __('transactions.partial_payment'),
+            'transaction' => $transaction,
+            'banksList' => $banksList
+        ]);
+    }
+
+    /**
+     * Process partial payment - robust version
+     */
+    public function processPartialPayment($id)
+    {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            $this->redirect('/transactions/view/' . $id);
+        }
+        
+        $db = \App\Core\Database::getInstance();
+        
+        try {
+            $db->beginTransaction();
+            
+            // Get original transaction
+            $originalTransaction = $this->transactionModel->find($id);
+            if (!$originalTransaction) {
+                throw new \Exception(__('messages.transaction_not_found'));
+            }
+            
+            // Validate payment amounts
+            $paymentRmb = floatval($_POST['payment_rmb'] ?? 0);
+            $paymentUsd = floatval($_POST['payment_usd'] ?? 0);
+            $paymentSdg = floatval($_POST['payment_sdg'] ?? 0);
+            $paymentAed = floatval($_POST['payment_aed'] ?? 0);
+            
+            if ($paymentRmb <= 0 && $paymentUsd <= 0 && $paymentSdg <= 0 && $paymentAed <= 0) {
+                throw new \Exception(__('messages.invalid_payment_amount'));
+            }
+            
+            // Check if payment exceeds balance
+            if ($paymentRmb > $originalTransaction['balance_rmb'] ||
+                $paymentUsd > $originalTransaction['balance_usd'] ||
+                $paymentSdg > ($originalTransaction['balance_sdg'] ?? 0) ||
+                $paymentAed > ($originalTransaction['balance_aed'] ?? 0)) {
+                throw new \Exception(__('messages.payment_exceeds_balance'));
+            }
+            
+            // Generate payment transaction number
+            $paymentNo = 'PAY-' . date('Ymd-His');
+            
+            // Create payment transaction
+            $paymentData = [
+                'transaction_no' => $paymentNo,
+                'client_id' => $originalTransaction['client_id'],
+                'transaction_type_id' => 2, // payment type
+                'transaction_date' => date('Y-m-d'),
+                'description' => 'Payment for invoice #' . $originalTransaction['transaction_no'],
+                'bank_name' => $_POST['bank_name'] ?? null,
+                'loading_id' => $originalTransaction['loading_id'] ?? null,
+                'total_amount_rmb' => 0,
+                'payment_rmb' => $paymentRmb,
+                'payment_usd' => $paymentUsd,
+                'payment_sdg' => $paymentSdg,
+                'payment_aed' => $paymentAed,
+                'balance_rmb' => 0,
+                'balance_usd' => 0,
+                'balance_sdg' => 0,
+                'balance_aed' => 0,
+                'status' => 'approved',
+                'parent_transaction_id' => $id,
+                'created_by' => $_SESSION['user_id'],
+                'approved_by' => $_SESSION['user_id'],
+                'approved_at' => date('Y-m-d H:i:s'),
+            ];
+            
+            $paymentId = $this->transactionModel->create($paymentData);
+            
+            // Update original transaction balance and payments
+            $newBalanceRmb = $originalTransaction['balance_rmb'] - $paymentRmb;
+            $newBalanceUsd = $originalTransaction['balance_usd'] - $paymentUsd;
+            $newBalanceSdg = ($originalTransaction['balance_sdg'] ?? 0) - $paymentSdg;
+            $newBalanceAed = ($originalTransaction['balance_aed'] ?? 0) - $paymentAed;
+            
+            $this->transactionModel->update($id, [
+                'payment_rmb' => $originalTransaction['payment_rmb'] + $paymentRmb,
+                'payment_usd' => $originalTransaction['payment_usd'] + $paymentUsd,
+                'payment_sdg' => ($originalTransaction['payment_sdg'] ?? 0) + $paymentSdg,
+                'payment_aed' => ($originalTransaction['payment_aed'] ?? 0) + $paymentAed,
+                'balance_rmb' => $newBalanceRmb,
+                'balance_usd' => $newBalanceUsd,
+                'balance_sdg' => $newBalanceSdg,
+                'balance_aed' => $newBalanceAed,
+                'status' => ($newBalanceRmb <= 0 && $newBalanceUsd <= 0 && $newBalanceSdg <= 0 && $newBalanceAed <= 0) ? 'approved' : 'pending',
+            ]);
+            
+            // Create cashbox movement
+            $cashboxModel = new Cashbox();
+            $cashboxModel->create([
+                'transaction_id' => $paymentId,
+                'movement_date' => date('Y-m-d'),
+                'movement_type' => 'in',
+                'category' => 'payment_received',
+                'amount_rmb' => $paymentRmb,
+                'amount_usd' => $paymentUsd,
+                'amount_sdg' => $paymentSdg,
+                'amount_aed' => $paymentAed,
+                'bank_name' => $_POST['bank_name'] ?? null,
+                'description' => 'Payment received for invoice #' . $originalTransaction['transaction_no'],
+                'created_by' => $_SESSION['user_id'],
+            ]);
+            
+            $db->commit();
+            
+            $successMsg = __('messages.payment_processed_successfully');
+            if ($newBalanceRmb <= 0 && $newBalanceUsd <= 0 && $newBalanceSdg <= 0 && $newBalanceAed <= 0) {
+                $successMsg .= ' ' . __('messages.claim_fully_paid');
+            }
+            
+            $this->redirect('/transactions/view/' . $id . '?success=' . urlencode($successMsg));
+            
+        } catch (\Exception $e) {
+            $db->rollback();
+            $this->redirect('/transactions/partial-payment/' . $id . '?error=' . urlencode($e->getMessage()));
+        }
     }
 }

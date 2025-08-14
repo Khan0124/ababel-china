@@ -109,11 +109,14 @@ $routes = [
     'GET' => [
         '/' => 'DashboardController@index',
         '/dashboard' => 'DashboardController@index',
+        '/dashboard/enhanced' => 'EnhancedDashboardController@index',
         '/login' => 'AuthController@login',
         '/logout' => 'AuthController@logout',
         '/profile' => 'AuthController@profile',
         '/change-language' => 'LanguageController@change',
         '/api/sync/status/{id}' => 'Api\\SyncController@status',
+        '/api/sync/statistics' => 'Api\\SyncController@statistics',
+        '/api/sync/test' => 'Api\\SyncController@testConnection',
         
         // Clients
         '/clients' => 'ClientController@index',
@@ -133,6 +136,10 @@ $routes = [
         '/cashbox' => 'CashboxController@index',
         '/cashbox/movement' => 'CashboxController@movement',
         '/cashbox/convert' => 'CashboxCurrencyController@index',
+        '/cashbox/currency-conversion/preview' => 'CashboxCurrencyController@getConversionPreview',
+        '/cashbox/currency-conversion/history' => 'CashboxCurrencyController@getConversionHistory',
+        '/cashbox/currency-conversion/balances' => 'CashboxCurrencyController@getCashboxBalances',
+        '/cashbox/currency-conversion/report' => 'CashboxCurrencyController@generateReport',
         
         // Exchange rates
         '/exchange-rates' => 'ExchangeRateController@index',
@@ -146,6 +153,15 @@ $routes = [
         '/reports/monthly' => 'ReportController@monthly',
         '/reports/clients' => 'ReportController@clients',
         '/reports/cashbox' => 'ReportController@cashbox',
+        // Exports
+        '/export/daily' => 'ExportController@dailyReport',
+        '/export/monthly' => 'ExportController@monthlyReport',
+        '/export/cashbox' => 'ExportController@cashboxReport',
+        '/export/client-statement' => 'ExportController@clientStatement',
+        '/export/transactions' => 'ExportController@transactionsList',
+        '/export/clients' => 'ExportController@clientsList',
+        '/export/invoice' => 'ExportController@generateInvoice',
+        '/export/receipt' => 'ExportController@generateReceipt',
         
         // Settings
         '/settings' => 'SettingsController@index',
@@ -156,6 +172,19 @@ $routes = [
         '/loadings/show/{id}' => 'LoadingController@show',
         '/loadings/export' => 'LoadingController@export',
         '/loadings/issue-bol/{id}' => 'LoadingController@issueBol',
+        
+        // Users
+        '/users' => 'UserController@index',
+        '/users/create' => 'UserController@create',
+        '/users/edit/{id}' => 'UserController@edit',
+        '/users/permissions/{id}' => 'UserController@permissions',
+        '/users/activity/{id}' => 'UserController@activity',
+        
+        // Health
+        '/health' => 'HealthController@check',
+        
+        // Exchange rate widget
+        '/exchange-rates/widget' => 'ExchangeRateController@getWidgetData',
     ],
     'POST' => [
         '/login' => 'AuthController@login',
@@ -165,6 +194,7 @@ $routes = [
         '/transactions/create' => 'TransactionController@create',
         '/transactions/approve/{id}' => 'TransactionController@approve',
         '/transactions/process-payment' => 'TransactionController@processPayment',
+        '/transactions/partial-payment/{id}' => 'TransactionController@showPartialPayment',
         '/cashbox/movement' => 'CashboxController@movement',
         '/settings/save' => 'SettingsController@save',
         '/api/sync/retry/{id}' => 'Api\\SyncController@retry',
@@ -177,6 +207,22 @@ $routes = [
         '/exchange-rates/auto-update' => 'ExchangeRateController@autoUpdate',
         // Cashbox conversions
         '/cashbox/convert' => 'CashboxCurrencyController@convert',
+        '/cashbox/currency-conversion/execute' => 'CashboxCurrencyController@executeConversion',
+        
+        // Users
+        '/users/create' => 'UserController@create',
+        '/users/edit/{id}' => 'UserController@update',
+        '/users/delete/{id}' => 'UserController@delete',
+        '/users/toggle-status/{id}' => 'UserController@toggleStatus',
+        '/users/permissions/{id}/update' => 'UserController@updatePermissions',
+        '/users/reset-password/{id}' => 'UserController@resetPassword',
+        
+        // Health
+        '/health/maintenance' => 'HealthController@maintenance',
+        
+        // Transactions partial payment
+        '/transactions/partial-payment/{id}' => 'TransactionController@processPartialPayment',
+        
         // Loadings
         '/loadings/create' => 'LoadingController@create',
         '/loadings/edit/{id}' => 'LoadingController@edit',
