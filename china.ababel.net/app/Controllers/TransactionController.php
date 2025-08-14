@@ -294,4 +294,46 @@ class TransactionController extends Controller
             $this->redirect('/transactions?error=' . urlencode(__('messages.error_deleting_transaction')));
         }
     }
+    
+    /**
+     * AJAX: Search transactions by claim number
+     */
+    public function searchByClaim()
+    {
+        $term = $_GET['q'] ?? ($_GET['term'] ?? ($_GET['claim'] ?? ''));
+        $term = trim($term);
+        if ($term === '') {
+            return $this->json(['success' => true, 'data' => []]);
+        }
+        $db = \App\Core\Database::getInstance();
+        $sql = "SELECT t.id, t.transaction_no, t.transaction_date, c.name AS client_name, l.claim_number, l.container_no
+                FROM transactions t
+                LEFT JOIN clients c ON t.client_id = c.id
+                LEFT JOIN loadings l ON t.loading_id = l.id
+                WHERE l.claim_number LIKE ?
+                ORDER BY t.transaction_date DESC, t.id DESC
+                LIMIT 20";
+        $stmt = $db->query($sql, ['%' . $term . '%']);
+        $rows = $stmt->fetchAll();
+        return $this->json(['success' => true, 'data' => $rows]);
+    }
+
+    /**
+     * AJAX: Process partial payment for a transaction
+     */
+    public function processPayment()
+    {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            return $this->json(['success' => false, 'message' => 'Invalid method']);
+        }
+        $transactionId = intval($_POST['transaction_id'] ?? 0);
+        $paymentCurrency = strtoupper(trim($_POST['payment_currency'] ?? ''));
+        $paymentAmount = floatval($_POST['payment_amount'] ?? 0);
+        $bankName = trim($_POST['bank_name'] ?? '');
+        if ($transactionId <= 0 || $paymentAmount <= 0 || !in_array($paymentCurrency, ['RMB','USD','SDG','AED'])) {
+            return $this->json(['success' => false, 'message' => __('messages.invalid_amount')]);
+        }
+        $result = $this->transactionModel->processPartialPayment($transactionId, $paymentCurrency, $paymentAmount, $bankName, $_SESSION['user_id']);
+        return $this->json($result);
+    }
 }

@@ -3,6 +3,12 @@
 // Define base path first
 define('BASE_PATH', dirname(__DIR__));
 
+// Optionally load Composer autoloader for vendor packages
+$vendorAutoload = BASE_PATH . '/vendor/autoload.php';
+if (file_exists($vendorAutoload)) {
+    require_once $vendorAutoload;
+}
+
 // Error reporting configuration - production safe
 error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED);
 ini_set('display_errors', 0);
@@ -75,10 +81,11 @@ if ($requestUri !== '/' && substr($requestUri, -1) === '/') {
 }
 
 // Public routes (no authentication required)
-$publicRoutes = ['/login', '/forgot-password', '/api/auth', '/change-language'];
+$publicRoutes = ['/login', '/forgot-password', '/change-language'];
 
 // Authentication check
-if (!in_array($requestUri, $publicRoutes) && !isset($_SESSION['user_id'])) {
+$isApiRequest = str_starts_with($requestUri, '/api/');
+if (!isset($_SESSION['user_id']) && !in_array($requestUri, $publicRoutes) && !$isApiRequest) {
     header('Location: /login');
     exit;
 }
@@ -92,7 +99,7 @@ $routes = [
         '/logout' => 'AuthController@logout',
         '/profile' => 'AuthController@profile',
         '/change-language' => 'LanguageController@change',
-        '/api/sync/status/{id}' => 'Api\SyncController@status',
+        '/api/sync/status/{id}' => 'Api\\SyncController@status',
         
         // Clients
         '/clients' => 'ClientController@index',
@@ -105,7 +112,7 @@ $routes = [
         '/transactions' => 'TransactionController@index',
         '/transactions/create' => 'TransactionController@create',
         '/transactions/view/{id}' => 'TransactionController@show',
-        '/transactions/approve/{id}' => 'TransactionController@showApprove', // ADD THIS LINE
+        '/transactions/approve/{id}' => 'TransactionController@showApprove', // GET approval page
         '/transactions/search-by-claim' => 'TransactionController@searchByClaim', // AJAX endpoint
         
         // Cashbox
@@ -121,13 +128,12 @@ $routes = [
         // Settings
         '/settings' => 'SettingsController@index',
         // Loadings
-    '/loadings' => 'LoadingController@index',
-    '/loadings/create' => 'LoadingController@create',
-    '/loadings/edit/{id}' => 'LoadingController@edit',
-    '/loadings/show/{id}' => 'LoadingController@show',  // Changed from /loadings/view/{id}
-    '/loadings/export' => 'LoadingController@export',
-    '/loadings/issue-bol/{id}' => 'LoadingController@issueBillOfLading',
-    '/loadings/issue-bol/{id}' => 'LoadingController@issueBol',
+        '/loadings' => 'LoadingController@index',
+        '/loadings/create' => 'LoadingController@create',
+        '/loadings/edit/{id}' => 'LoadingController@edit',
+        '/loadings/show/{id}' => 'LoadingController@show',
+        '/loadings/export' => 'LoadingController@export',
+        '/loadings/issue-bol/{id}' => 'LoadingController@issueBol',
     ],
     'POST' => [
         '/login' => 'AuthController@login',
@@ -139,16 +145,16 @@ $routes = [
         '/transactions/process-payment' => 'TransactionController@processPayment', // AJAX endpoint
         '/cashbox/movement' => 'CashboxController@movement',
         '/settings/save' => 'SettingsController@save',
-        '/api/sync/retry/{id}' => 'Api\SyncController@retry',
-        '/api/sync/all' => 'Api\SyncController@syncAll',
-        '/api/sync/webhook' => 'Api\SyncController@webhook',
-        '/api/sync/loading/{id}' => 'Api\SyncController@syncLoading',
-        '/api/sync/bol/{id}' => 'Api\SyncController@updateBol',
+        '/api/sync/retry/{id}' => 'Api\\SyncController@retry',
+        '/api/sync/all' => 'Api\\SyncController@syncAll',
+        '/api/sync/webhook' => 'Api\\SyncController@webhook',
+        '/api/sync/loading/{id}' => 'Api\\SyncController@syncLoading',
+        '/api/sync/bol/{id}' => 'Api\\SyncController@updateBol',
         // Loadings
-    '/loadings/create' => 'LoadingController@create',
-    '/loadings/edit/{id}' => 'LoadingController@edit',
-    '/loadings/delete/{id}' => 'LoadingController@delete',
-    '/loadings/update-status/{id}' => 'LoadingController@updateStatus',
+        '/loadings/create' => 'LoadingController@create',
+        '/loadings/edit/{id}' => 'LoadingController@edit',
+        '/loadings/delete/{id}' => 'LoadingController@delete',
+        '/loadings/update-status/{id}' => 'LoadingController@updateStatus',
     ]
 ];
 

@@ -6,6 +6,12 @@
  * php test_updates.php
  */
 
+// Block web access
+if (php_sapi_name() !== 'cli') {
+    http_response_code(403);
+    exit('Forbidden');
+}
+
 // تعيين منطقة زمنية
 date_default_timezone_set('Asia/Shanghai');
 

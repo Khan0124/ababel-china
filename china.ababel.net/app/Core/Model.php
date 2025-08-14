@@ -38,7 +38,7 @@ abstract class Model
         }
         
         if ($limit) {
-            $sql .= " LIMIT $limit";
+            $sql .= " LIMIT " . intval($limit);
         }
         
         $stmt = $this->db->query($sql, $params);
