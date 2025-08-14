@@ -133,7 +133,7 @@ class SyncController extends Controller
     {
         try {
             $apiKey = $_SERVER['HTTP_X_API_KEY'] ?? '';
-            $validApiKey = config('webhook_api_key', 'AB@1234X-China2Port!');
+            $validApiKey = config('webhook_api_key', '');
             
             if ($apiKey !== $validApiKey) {
                 http_response_code(401);
@@ -141,13 +141,40 @@ class SyncController extends Controller
                 return;
             }
             
-            $input = json_decode(file_get_contents('php://input'), true);
+            $raw = file_get_contents('php://input');
+            $signature = $_SERVER['HTTP_X_SIGNATURE'] ?? '';
+            $computed = hash_hmac('sha256', $raw, $validApiKey);
+            if (!hash_equals($computed, $signature)) {
+                http_response_code(401);
+                echo json_encode(['error' => 'Invalid signature']);
+                return;
+            }
             
+            $input = json_decode($raw, true);
             if (!$input) {
                 throw new \Exception('Invalid JSON data');
             }
+
+            // Idempotency: if webhook_id exists and was processed, ignore
+            if (!empty($input['webhook_id'])) {
+                $db = \App\Core\Database::getInstance();
+                try {
+                    $db->query("CREATE TABLE IF NOT EXISTS processed_webhooks (webhook_id VARCHAR(64) PRIMARY KEY, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)");
+                } catch (\Exception $e) {
+                    // ignore table creation errors
+                }
+                $stmt = $db->query("SELECT webhook_id FROM processed_webhooks WHERE webhook_id = ?", [$input['webhook_id']]);
+                if ($stmt->fetch()) {
+                    echo json_encode(['success' => true, 'message' => 'Already processed']);
+                    return;
+                }
+            }
             
             $result = $this->syncService->handlePortSudanWebhook($input);
+            
+            if (!empty($input['webhook_id'])) {
+                $db->query("INSERT IGNORE INTO processed_webhooks (webhook_id) VALUES (?)", [$input['webhook_id']]);
+            }
             
             echo json_encode([
                 'success' => true,

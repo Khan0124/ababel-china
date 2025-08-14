@@ -21,6 +21,7 @@ include __DIR__ . '/../layouts/header.php';
     <?php endif; ?>
     
     <form method="POST" action="/settings/save">
+        <?= csrf_field() ?>
         <div class="row">
             <!-- General Settings -->
             <div class="col-md-6">

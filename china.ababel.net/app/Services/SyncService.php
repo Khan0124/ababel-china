@@ -163,14 +163,14 @@ class SyncService
         $curlOptions = [
             CURLOPT_URL => $url,
             CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_TIMEOUT => 30,
+            CURLOPT_TIMEOUT => intval(getenv('SYNC_HTTP_TIMEOUT') ?: 30),
             CURLOPT_HTTPHEADER => [
                 'Content-Type: application/json',
                 'Accept: application/json',
                 'X-API-Key: ' . $this->apiKey
             ],
-            CURLOPT_SSL_VERIFYPEER => false,
-            CURLOPT_SSL_VERIFYHOST => false
+            CURLOPT_SSL_VERIFYPEER => (bool) (getenv('SYNC_SSL_VERIFY') ?: false),
+            CURLOPT_SSL_VERIFYHOST => (bool) (getenv('SYNC_SSL_VERIFY') ?: false),
         ];
         
         // Method-specific options

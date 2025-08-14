@@ -232,15 +232,31 @@ class LoadingController extends Controller
                     mkdir($uploadDir, 0755, true);
                 }
                 
+                // Size limit 10MB
+                if (($_FILES['bol_file']['size'] ?? 0) > 10 * 1024 * 1024) {
+                    $this->redirect('/loadings/edit/' . $id . '?error=' . urlencode('الملف كبير للغاية. الحد الأقصى 10MB'));
+                    return;
+                }
+
                 $fileInfo = pathinfo($_FILES['bol_file']['name']);
-                $fileName = 'bol_' . $id . '_' . time() . '.' . $fileInfo['extension'];
+                $ext = strtolower($fileInfo['extension'] ?? '');
+                $fileName = 'bol_' . $id . '_' . time() . '.' . $ext;
                 $targetFile = $uploadDir . $fileName;
                 
                 // التحقق من نوع الملف
                 $allowedTypes = ['pdf', 'jpg', 'jpeg', 'png'];
-                if (!in_array(strtolower($fileInfo['extension']), $allowedTypes)) {
+                if (!in_array($ext, $allowedTypes)) {
                     $this->redirect('/loadings/edit/' . $id . '?error=' . 
                         urlencode('نوع الملف غير مسموح. يُسمح فقط بـ PDF, JPG, PNG'));
+                    return;
+                }
+                
+                // Basic MIME check
+                $finfo = new \finfo(FILEINFO_MIME_TYPE);
+                $mime = $finfo->file($_FILES['bol_file']['tmp_name']);
+                $allowedMimes = ['application/pdf', 'image/jpeg', 'image/png'];
+                if (!in_array($mime, $allowedMimes)) {
+                    $this->redirect('/loadings/edit/' . $id . '?error=' . urlencode('نوع الملف غير صالح.'));
                     return;
                 }
                 
