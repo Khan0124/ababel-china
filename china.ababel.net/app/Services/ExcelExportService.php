@@ -753,7 +753,54 @@ class ExcelExportService
             'download_url' => '/exports/excel/' . basename($filepath)
         ];
     }
-    
+
+    /**
+     * Export invoice to Excel
+     */
+    public function exportInvoice(array $invoiceData, array $options = [])
+    {
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+
+        $sheet->setTitle(__('invoice'));
+        $this->addReportHeader($sheet, __('invoice') . ' ' . ($invoiceData['invoice_no'] ?? ''), $invoiceData['date'] ?? date('Y-m-d'));
+
+        $row = 6;
+        // Client info
+        $sheet->setCellValue("A{$row}", __('clients.client_info'));
+        $sheet->getStyle("A{$row}")->getFont()->setBold(true);
+        $row++;
+        $sheet->setCellValue("A{$row}", __('clients.name'));
+        $sheet->setCellValue("B{$row}", ($invoiceData['client']['name'] ?? ''));
+        $row++;
+        $sheet->setCellValue("A{$row}", __('clients.client_code'));
+        $sheet->setCellValue("B{$row}", ($invoiceData['client']['client_code'] ?? ''));
+        $row += 2;
+
+        // Items
+        $sheet->setCellValue("A{$row}", __('transactions.description'));
+        $sheet->setCellValue("B{$row}", __('currency'));
+        $sheet->setCellValue("C{$row}", __('amount'));
+        $sheet->setCellValue("D{$row}", __('total'));
+        $sheet->getStyle("A{$row}:D{$row}")->getFont()->setBold(true);
+        $row++;
+        foreach (($invoiceData['items'] ?? []) as $item) {
+            $sheet->setCellValue("A{$row}", $item['description'] ?? '');
+            $sheet->setCellValue("B{$row}", $item['currency'] ?? '');
+            $sheet->setCellValue("C{$row}", $item['amount'] ?? 0);
+            $sheet->setCellValue("D{$row}", $item['total'] ?? 0);
+            $row++;
+        }
+
+        // Totals
+        $row++;
+        $sheet->setCellValue("C{$row}", __('total'));
+        $totalText = ($invoiceData['totals']['RMB'] ?? 0) . ' RMB';
+        $sheet->setCellValue("D{$row}", $totalText);
+
+        return $this->saveExcel($spreadsheet, 'invoice_' . ($invoiceData['invoice_no'] ?? date('YmdHis')));
+    }
+
     /**
      * Auto-size columns
      */

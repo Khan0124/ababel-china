@@ -140,6 +140,7 @@ $routes = [
         '/cashbox/currency-conversion/history' => 'CashboxCurrencyController@getConversionHistory',
         '/cashbox/currency-conversion/balances' => 'CashboxCurrencyController@getCashboxBalances',
         '/cashbox/currency-conversion/report' => 'CashboxCurrencyController@generateReport',
+        '/cashbox/currency-conversion/validate' => 'CashboxCurrencyController@validateConversion',
         
         // Exchange rates
         '/exchange-rates' => 'ExchangeRateController@index',

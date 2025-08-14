@@ -428,10 +428,7 @@ class UserController extends Controller
     public function updatePermissions($id)
     {
         try {
-            // Validate CSRF token
-            if (!CSRF::verify($_POST['_csrf_token'] ?? '')) {
-                throw new \Exception(__('error.csrf_invalid'));
-            }
+            // CSRF is validated globally in public/index.php
             
             $permissions = $_POST['permissions'] ?? [];
             $permissionsJson = json_encode($permissions);

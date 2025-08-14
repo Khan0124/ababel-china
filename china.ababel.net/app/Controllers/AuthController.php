@@ -53,6 +53,14 @@ class AuthController extends Controller
                 // Update last login
                 $userModel->updateLastLogin($user['id']);
                 
+                // Activity log (best-effort)
+                try {
+                    $db = \App\Core\Database::getInstance();
+                    $db->query("INSERT INTO audit_log (user_id, action, table_name, record_id, new_values, ip_address, user_agent) VALUES (?, 'login', 'users', ?, ?, ?, ?)", [
+                        $user['id'], $user['id'], json_encode(['description' => 'login'], JSON_UNESCAPED_UNICODE), $_SERVER['REMOTE_ADDR'] ?? null, $_SERVER['HTTP_USER_AGENT'] ?? null
+                    ]);
+                } catch (\Throwable $e) {}
+                
                 // Redirect to dashboard
                 $this->redirect('/dashboard');
             } else {
@@ -74,6 +82,15 @@ class AuthController extends Controller
     
     public function logout()
     {
+        // Activity log (best-effort)
+        try {
+            if (isset($_SESSION['user_id'])) {
+                $db = \App\Core\Database::getInstance();
+                $db->query("INSERT INTO audit_log (user_id, action, table_name, record_id, new_values, ip_address, user_agent) VALUES (?, 'logout', 'users', ?, ?, ?, ?)", [
+                    $_SESSION['user_id'], $_SESSION['user_id'], json_encode(['description' => 'logout'], JSON_UNESCAPED_UNICODE), $_SERVER['REMOTE_ADDR'] ?? null, $_SERVER['HTTP_USER_AGENT'] ?? null
+                ]);
+            }
+        } catch (\Throwable $e) {}
         session_destroy();
         $this->redirect('/login');
     }
