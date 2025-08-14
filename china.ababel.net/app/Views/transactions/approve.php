@@ -69,6 +69,7 @@
                     
                     <div class="text-center mt-4">
                         <form method="POST" action="/transactions/approve/<?= $transaction['id'] ?>" style="display: inline;">
+                            <?= csrf_field() ?>
                             <button type="submit" class="btn btn-success btn-lg" 
                                     onclick="return confirm('<?= __('messages.confirm_approval_action') ?>')">
                                 <i class="bi bi-check-circle"></i> <?= __('transactions.approve') ?>

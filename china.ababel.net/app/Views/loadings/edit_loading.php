@@ -74,6 +74,7 @@ if ($loading['office'] === 'port_sudan') {
                     <?php endif; ?>
                     
                     <form method="POST" action="/loadings/edit/<?= $loading['id'] ?>" id="loading-form">
+                        <?= csrf_field() ?>
                         <!-- Row 1: Basic Information -->
                         <div class="row mb-3">
                             <div class="col-md-3">
