@@ -1,0 +1,886 @@
+/**
+ * Unified Print Styles for China Office Accounting System
+ * Supports both Arabic (RTL) and English (LTR) layouts
+ * Compatible with all modern browsers and PDF generation
+ */
+
+/* Print Media Query */
+@media print {
+    /* Reset and Basic Layout */
+    * {
+        -webkit-print-color-adjust: exact !important;
+        color-adjust: exact !important;
+        box-sizing: border-box;
+    }
+    
+    body {
+        font-family: 'Arial', 'Times New Roman', sans-serif;
+        font-size: 11pt;
+        line-height: 1.4;
+        color: #000;
+        background: white !important;
+        margin: 0;
+        padding: 15mm;
+    }
+    
+    /* RTL Support */
+    body[dir="rtl"], .rtl {
+        direction: rtl;
+        text-align: right;
+        font-family: 'Arial', 'Tahoma', sans-serif;
+    }
+    
+    body[dir="ltr"], .ltr {
+        direction: ltr;
+        text-align: left;
+    }
+    
+    /* Hide non-printable elements */
+    .no-print,
+    .no-print *,
+    .btn,
+    button,
+    .navbar,
+    .sidebar,
+    .breadcrumb,
+    .modal,
+    .alert-dismissible .btn-close,
+    .pagination,
+    form input[type="submit"],
+    form button,
+    .form-control,
+    .form-select,
+    .dropdown,
+    .tooltip,
+    .popover {
+        display: none !important;
+    }
+    
+    /* Show print-only elements */
+    .d-print-block,
+    .d-print-inline,
+    .d-print-inline-block {
+        display: block !important;
+    }
+    
+    .d-print-inline {
+        display: inline !important;
+    }
+    
+    .d-print-inline-block {
+        display: inline-block !important;
+    }
+    
+    /* Page Layout */
+    @page {
+        size: A4;
+        margin: 15mm;
+    }
+    
+    @page :first {
+        margin-top: 20mm;
+    }
+    
+    /* Page Breaks */
+    .page-break {
+        page-break-before: always !important;
+    }
+    
+    .page-break-after {
+        page-break-after: always !important;
+    }
+    
+    .no-page-break,
+    .no-break {
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+    }
+    
+    /* Avoid breaking these elements */
+    .card,
+    .section,
+    .report-section,
+    .summary-card,
+    .table thead,
+    .table tfoot,
+    tr,
+    .row,
+    h1, h2, h3, h4, h5, h6 {
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+    }
+    
+    /* Keep table rows together */
+    tr {
+        page-break-inside: avoid !important;
+    }
+    
+    /* Typography */
+    h1, h2, h3, h4, h5, h6 {
+        color: #2c3e50 !important;
+        margin: 0 0 12pt 0;
+        line-height: 1.2;
+        font-weight: bold;
+    }
+    
+    h1 {
+        font-size: 18pt;
+        border-bottom: 2pt solid #3498db !important;
+        padding-bottom: 6pt;
+        margin-bottom: 15pt;
+    }
+    
+    h2 {
+        font-size: 16pt;
+        margin-top: 15pt;
+        border-bottom: 1pt solid #ddd !important;
+        padding-bottom: 4pt;
+    }
+    
+    h3 {
+        font-size: 14pt;
+        margin-top: 12pt;
+    }
+    
+    h4, h5, h6 {
+        font-size: 12pt;
+        margin-top: 10pt;
+    }
+    
+    p {
+        margin: 0 0 8pt 0;
+        line-height: 1.4;
+    }
+    
+    /* Print Header */
+    .print-header {
+        text-align: center;
+        margin-bottom: 20pt;
+        border-bottom: 2pt solid #3498db !important;
+        padding-bottom: 15pt;
+    }
+    
+    .print-header .company-name {
+        font-size: 20pt;
+        font-weight: bold;
+        color: #3498db !important;
+        margin-bottom: 6pt;
+    }
+    
+    .print-header .report-title {
+        font-size: 16pt;
+        font-weight: bold;
+        color: #2c3e50 !important;
+        margin-bottom: 4pt;
+    }
+    
+    .print-header .report-subtitle {
+        font-size: 12pt;
+        color: #666 !important;
+        margin-bottom: 8pt;
+    }
+    
+    .print-header .report-meta {
+        font-size: 10pt;
+        color: #888 !important;
+        font-style: italic;
+    }
+    
+    /* Company Logo */
+    .company-logo {
+        max-height: 60pt !important;
+        max-width: 150pt !important;
+        margin-bottom: 10pt;
+    }
+    
+    /* Report Container */
+    .report-container,
+    .print-container {
+        width: 100%;
+        max-width: none;
+        margin: 0;
+        padding: 0;
+    }
+    
+    /* Section Styling */
+    .report-section,
+    .section {
+        margin: 15pt 0;
+        page-break-inside: avoid;
+    }
+    
+    .section-title {
+        font-size: 14pt;
+        font-weight: bold;
+        color: #2c3e50 !important;
+        border-bottom: 1pt solid #ddd !important;
+        padding-bottom: 4pt;
+        margin-bottom: 10pt;
+    }
+    
+    /* Cards */
+    .card {
+        border: 1pt solid #ddd !important;
+        margin-bottom: 15pt;
+        page-break-inside: avoid;
+        background: white !important;
+    }
+    
+    .card-header {
+        background: #f8f9fa !important;
+        border-bottom: 1pt solid #ddd !important;
+        padding: 8pt 12pt;
+        font-weight: bold;
+        color: #495057 !important;
+    }
+    
+    .card-body {
+        padding: 12pt;
+    }
+    
+    .card-title {
+        font-size: 14pt;
+        font-weight: bold;
+        color: #2c3e50 !important;
+        margin-bottom: 10pt;
+    }
+    
+    /* Summary Cards Grid */
+    .summary-grid {
+        display: table;
+        width: 100%;
+        table-layout: fixed;
+        border-collapse: separate;
+        border-spacing: 8pt;
+        margin: 15pt 0;
+    }
+    
+    .summary-card {
+        display: table-cell;
+        width: 23%;
+        border: 1pt solid #ddd !important;
+        padding: 10pt;
+        text-align: center;
+        background: #f8f9fa !important;
+        vertical-align: top;
+    }
+    
+    .summary-card.positive {
+        background: #d4edda !important;
+        border-color: #c3e6cb !important;
+    }
+    
+    .summary-card.negative {
+        background: #f8d7da !important;
+        border-color: #f5c6cb !important;
+    }
+    
+    .summary-card.warning {
+        background: #fff3cd !important;
+        border-color: #ffeaa7 !important;
+    }
+    
+    .summary-card.info {
+        background: #cce5ff !important;
+        border-color: #b8daff !important;
+    }
+    
+    .summary-card h3,
+    .summary-card .summary-label {
+        font-size: 10pt;
+        color: #666 !important;
+        margin: 0 0 6pt 0;
+        font-weight: normal;
+    }
+    
+    .summary-value {
+        font-size: 16pt;
+        font-weight: bold;
+        color: #333 !important;
+        margin: 0;
+    }
+    
+    /* Balance Grid */
+    .balance-grid {
+        display: table;
+        width: 100%;
+        table-layout: fixed;
+        border-collapse: separate;
+        border-spacing: 8pt;
+        margin: 15pt 0;
+    }
+    
+    .balance-card {
+        display: table-cell;
+        width: 23%;
+        border: 2pt solid #ddd !important;
+        padding: 12pt;
+        text-align: center;
+        vertical-align: top;
+    }
+    
+    .balance-card h3 {
+        font-size: 12pt;
+        color: #666 !important;
+        margin: 0 0 8pt 0;
+    }
+    
+    .balance-value {
+        font-size: 18pt;
+        font-weight: bold;
+    }
+    
+    .balance-value.positive {
+        color: #28a745 !important;
+    }
+    
+    .balance-value.negative {
+        color: #dc3545 !important;
+    }
+    
+    /* Tables */
+    .table,
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 10pt 0;
+        font-size: 10pt;
+        page-break-inside: auto;
+    }
+    
+    .table th,
+    table th {
+        background: #3498db !important;
+        color: white !important;
+        font-weight: bold;
+        padding: 6pt 4pt;
+        text-align: center;
+        border: 1pt solid #2980b9 !important;
+        font-size: 9pt;
+        line-height: 1.2;
+    }
+    
+    .table td,
+    table td {
+        padding: 5pt 4pt;
+        border: 1pt solid #ddd !important;
+        vertical-align: top;
+        font-size: 9pt;
+    }
+    
+    /* RTL table alignment */
+    .rtl .table th,
+    .rtl table th,
+    body[dir="rtl"] .table th,
+    body[dir="rtl"] table th {
+        text-align: right;
+    }
+    
+    .rtl .table td,
+    .rtl table td,
+    body[dir="rtl"] .table td,
+    body[dir="rtl"] table td {
+        text-align: right;
+    }
+    
+    /* Amount columns always align opposite to text direction */
+    .amount,
+    .text-end,
+    .text-right,
+    .currency {
+        text-align: right !important;
+        font-family: 'Courier New', monospace !important;
+        white-space: nowrap;
+    }
+    
+    .rtl .amount,
+    body[dir="rtl"] .amount {
+        text-align: left !important;
+    }
+    
+    /* Table striping */
+    .table tbody tr:nth-child(even),
+    table tbody tr:nth-child(even) {
+        background: #f8f9fa !important;
+    }
+    
+    /* Table footers */
+    .table tfoot th,
+    .table tfoot td,
+    table tfoot th,
+    table tfoot td {
+        background: #34495e !important;
+        color: white !important;
+        font-weight: bold;
+        border-color: #2c3e50 !important;
+    }
+    
+    /* Special table row styling */
+    .total-row,
+    .table-secondary,
+    tr.table-secondary {
+        background: #e9ecef !important;
+        font-weight: bold;
+    }
+    
+    .table-success,
+    tr.table-success,
+    .total-in {
+        background: #d4edda !important;
+        color: #155724 !important;
+    }
+    
+    .table-danger,
+    tr.table-danger,
+    .total-out {
+        background: #f8d7da !important;
+        color: #721c24 !important;
+    }
+    
+    .table-primary,
+    tr.table-primary,
+    .net-change {
+        background: #cce5ff !important;
+        color: #004085 !important;
+    }
+    
+    /* Text Colors */
+    .text-success,
+    .positive {
+        color: #28a745 !important;
+    }
+    
+    .text-danger,
+    .negative {
+        color: #dc3545 !important;
+    }
+    
+    .text-warning {
+        color: #856404 !important;
+    }
+    
+    .text-info {
+        color: #0c5460 !important;
+    }
+    
+    .text-muted {
+        color: #6c757d !important;
+    }
+    
+    /* Badges */
+    .badge {
+        display: inline-block;
+        padding: 2pt 6pt;
+        font-size: 8pt;
+        font-weight: bold;
+        text-transform: uppercase;
+        border-radius: 3pt;
+        border: 1pt solid transparent;
+    }
+    
+    .badge.bg-success,
+    .badge.success {
+        background: #d4edda !important;
+        color: #155724 !important;
+        border-color: #c3e6cb !important;
+    }
+    
+    .badge.bg-danger,
+    .badge.danger {
+        background: #f8d7da !important;
+        color: #721c24 !important;
+        border-color: #f5c6cb !important;
+    }
+    
+    .badge.bg-warning,
+    .badge.warning {
+        background: #fff3cd !important;
+        color: #856404 !important;
+        border-color: #ffeaa7 !important;
+    }
+    
+    .badge.bg-info,
+    .badge.info {
+        background: #d1ecf1 !important;
+        color: #0c5460 !important;
+        border-color: #bee5eb !important;
+    }
+    
+    .badge.bg-primary,
+    .badge.primary {
+        background: #cce5ff !important;
+        color: #004085 !important;
+        border-color: #b8daff !important;
+    }
+    
+    /* Client Information */
+    .client-info {
+        background: #f8f9fa !important;
+        border: 1pt solid #ddd !important;
+        border-radius: 4pt;
+        padding: 12pt;
+        margin: 15pt 0;
+    }
+    
+    .client-info h2,
+    .client-info h3 {
+        color: #2c3e50 !important;
+        margin: 0 0 8pt 0;
+        font-size: 14pt;
+    }
+    
+    .client-info p {
+        margin: 4pt 0;
+        font-size: 10pt;
+    }
+    
+    /* Financial Grid */
+    .financial-grid {
+        display: table;
+        width: 100%;
+        margin: 15pt 0;
+    }
+    
+    .financial-column {
+        display: table-cell;
+        width: 48%;
+        vertical-align: top;
+        padding: 0 1%;
+    }
+    
+    /* List styles */
+    ul, ol {
+        margin: 8pt 0;
+        padding-left: 20pt;
+    }
+    
+    .rtl ul,
+    .rtl ol,
+    body[dir="rtl"] ul,
+    body[dir="rtl"] ol {
+        padding-left: 0;
+        padding-right: 20pt;
+    }
+    
+    li {
+        margin-bottom: 4pt;
+    }
+    
+    /* Progress bars (convert to text) */
+    .progress {
+        display: none !important;
+    }
+    
+    .progress::after {
+        content: attr(title) !important;
+        display: inline-block !important;
+        font-size: 9pt;
+        color: #666 !important;
+    }
+    
+    /* Status indicators */
+    .status-approved::before {
+        content: "✓ ";
+        color: #28a745 !important;
+        font-weight: bold;
+    }
+    
+    .status-pending::before {
+        content: "⏳ ";
+        color: #ffc107 !important;
+        font-weight: bold;
+    }
+    
+    .status-cancelled::before {
+        content: "✗ ";
+        color: #dc3545 !important;
+        font-weight: bold;
+    }
+    
+    /* Chart areas (hide or replace with summary) */
+    canvas,
+    .chart-container {
+        display: none !important;
+    }
+    
+    .chart-container::after {
+        content: "[Chart: " attr(data-chart-title) "]";
+        display: block !important;
+        text-align: center;
+        font-style: italic;
+        color: #666 !important;
+        border: 1pt dashed #ccc !important;
+        padding: 20pt;
+        margin: 15pt 0;
+    }
+    
+    /* Print Footer */
+    .print-footer {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 15mm;
+        border-top: 1pt solid #ddd !important;
+        font-size: 8pt;
+        color: #666 !important;
+        padding: 4pt 0;
+        background: white !important;
+    }
+    
+    .print-footer .footer-left {
+        float: left;
+    }
+    
+    .print-footer .footer-right {
+        float: right;
+    }
+    
+    .rtl .print-footer .footer-left,
+    body[dir="rtl"] .print-footer .footer-left {
+        float: right;
+    }
+    
+    .rtl .print-footer .footer-right,
+    body[dir="rtl"] .print-footer .footer-right {
+        float: left;
+    }
+    
+    /* Clearfix */
+    .clearfix::after {
+        content: "";
+        display: table;
+        clear: both;
+    }
+    
+    /* Spacing utilities for print */
+    .mt-print {
+        margin-top: 15pt !important;
+    }
+    
+    .mb-print {
+        margin-bottom: 15pt !important;
+    }
+    
+    .pt-print {
+        padding-top: 15pt !important;
+    }
+    
+    .pb-print {
+        padding-bottom: 15pt !important;
+    }
+    
+    /* Font weights */
+    .fw-bold,
+    .font-weight-bold {
+        font-weight: bold !important;
+    }
+    
+    .fw-normal {
+        font-weight: normal !important;
+    }
+    
+    /* Text alignment */
+    .text-center {
+        text-align: center !important;
+    }
+    
+    .text-left {
+        text-align: left !important;
+    }
+    
+    .text-right {
+        text-align: right !important;
+    }
+    
+    /* RTL overrides for alignment */
+    .rtl .text-left,
+    body[dir="rtl"] .text-left {
+        text-align: right !important;
+    }
+    
+    .rtl .text-right,
+    body[dir="rtl"] .text-right {
+        text-align: left !important;
+    }
+    
+    /* Print-specific containers */
+    .print-section {
+        margin: 20pt 0;
+        page-break-inside: avoid;
+    }
+    
+    .print-page {
+        page-break-before: always;
+    }
+    
+    /* Watermark support */
+    .watermark {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) rotate(-45deg);
+        font-size: 48pt;
+        color: rgba(0, 0, 0, 0.1) !important;
+        z-index: -1;
+        pointer-events: none;
+        font-weight: bold;
+    }
+    
+    /* Invoice-specific styles */
+    .invoice-header {
+        border-bottom: 2pt solid #3498db !important;
+        padding-bottom: 15pt;
+        margin-bottom: 20pt;
+    }
+    
+    .invoice-title {
+        font-size: 24pt;
+        color: #3498db !important;
+        font-weight: bold;
+        margin: 0;
+    }
+    
+    .invoice-info {
+        float: right;
+        width: 40%;
+        text-align: right;
+    }
+    
+    .rtl .invoice-info,
+    body[dir="rtl"] .invoice-info {
+        float: left;
+        text-align: left;
+    }
+    
+    .company-info {
+        float: left;
+        width: 55%;
+    }
+    
+    .rtl .company-info,
+    body[dir="rtl"] .company-info {
+        float: right;
+    }
+    
+    .invoice-totals {
+        float: right;
+        width: 40%;
+        margin-top: 20pt;
+    }
+    
+    .rtl .invoice-totals,
+    body[dir="rtl"] .invoice-totals {
+        float: left;
+    }
+    
+    .payment-terms {
+        margin-top: 20pt;
+        padding: 12pt;
+        background: #fff3cd !important;
+        border: 1pt solid #ffc107 !important;
+        border-radius: 4pt;
+    }
+    
+    /* Responsive adjustments for narrow tables */
+    @media print and (max-width: 21cm) {
+        .table,
+        table {
+            font-size: 8pt;
+        }
+        
+        .table th,
+        .table td,
+        table th,
+        table td {
+            padding: 3pt 2pt;
+        }
+        
+        .summary-grid {
+            border-spacing: 4pt;
+        }
+        
+        .summary-card {
+            padding: 8pt;
+        }
+    }
+}
+
+/* Screen styles for print preview */
+@media screen {
+    .print-preview {
+        background: #f5f5f5;
+        padding: 20px;
+    }
+    
+    .print-preview .print-container {
+        background: white;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        margin: 0 auto;
+        max-width: 210mm;
+        min-height: 297mm;
+        padding: 15mm;
+    }
+}
+
+/* High contrast mode support */
+@media print and (prefers-contrast: high) {
+    body {
+        color: #000 !important;
+        background: white !important;
+    }
+    
+    .table th,
+    table th {
+        background: #000 !important;
+        color: white !important;
+    }
+    
+    .card,
+    .summary-card,
+    .client-info {
+        border-color: #000 !important;
+    }
+}
+
+/* Print in color when available */
+@media print and (color) {
+    .text-success,
+    .positive {
+        color: #198754 !important;
+    }
+    
+    .text-danger,
+    .negative {
+        color: #dc3545 !important;
+    }
+    
+    .text-warning {
+        color: #fd7e14 !important;
+    }
+    
+    .text-info {
+        color: #0dcaf0 !important;
+    }
+}
+
+/* Monochrome fallback */
+@media print and (monochrome) {
+    .text-success,
+    .text-danger,
+    .text-warning,
+    .text-info,
+    .positive,
+    .negative {
+        color: #000 !important;
+        font-weight: bold !important;
+    }
+    
+    .positive::before {
+        content: "(+) ";
+    }
+    
+    .negative::before {
+        content: "(-) ";
+    }
+}

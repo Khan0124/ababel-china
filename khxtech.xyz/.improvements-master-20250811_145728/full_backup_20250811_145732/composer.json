@@ -1,0 +1,25 @@
+{
+    "name": "ababel/china_ababel",
+    "description": "China Office Accounting System",
+    "type": "project",
+    "require": {
+        "php": "^8.3",
+        "ext-pdo": "*",
+        "ext-mbstring": "*",
+        "ext-json": "*",
+        "phpmailer/phpmailer": "^6.8",
+        "mpdf/mpdf": "^8.1",
+        "phpoffice/phpspreadsheet": "^1.28"
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "app/"
+        }
+    },
+    "scripts": {
+        "post-install-cmd": [
+            "mkdir -p storage/logs storage/exports",
+            "chmod -R 755 storage"
+        ]
+    }
+}
