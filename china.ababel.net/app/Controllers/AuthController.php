@@ -20,6 +20,10 @@ class AuthController extends Controller
         }
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            // Optional: email/username basic trim
+            $username = trim($_POST['username'] ?? '');
+            $password = $_POST['password'] ?? '';
+
             if ($attempt['count'] >= $maxAttempts) {
                 $this->view('auth/login', [
                     'title' => 'تسجيل الدخول',
@@ -28,7 +32,7 @@ class AuthController extends Controller
                 return;
             }
 
-            $username = $_POST['username'] ?? '';
+            $username = $username;
             $password = $_POST['password'] ?? '';
             
             $userModel = new User();

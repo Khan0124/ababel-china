@@ -66,6 +66,7 @@ require_once BASE_PATH . '/app/Views/layouts/header.php';
                         </div>
                         <div class="card-body">
                             <form id="createUserForm" method="POST" action="/users/create">
+                                <?= csrf_field() ?>
                                 <div class="row">
                                     <!-- Basic Information -->
                                     <div class="col-md-6">

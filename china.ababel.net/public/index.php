@@ -206,7 +206,7 @@ $routes = [
         '/exchange-rates/update' => 'ExchangeRateController@updateRate',
         '/exchange-rates/auto-update' => 'ExchangeRateController@autoUpdate',
         // Cashbox conversions
-        '/cashbox/convert' => 'CashboxCurrencyController@convert',
+        '/cashbox/convert' => 'CashboxCurrencyController@executeConversion',
         '/cashbox/currency-conversion/execute' => 'CashboxCurrencyController@executeConversion',
         
         // Users

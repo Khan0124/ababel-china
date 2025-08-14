@@ -43,7 +43,8 @@ require_once BASE_PATH . '/app/Views/layouts/header.php';
                             </h5>
                         </div>
                         <div class="card-body">
-                            <form id="editUserForm" method="POST" action="/users/update/<?= $user['id'] ?>">
+                            <form id="editUserForm" method="POST" action="/users/edit/<?= $user['id'] ?>">
+                                <?= csrf_field() ?>
                                 <div class="row">
                                     <!-- Basic Information -->
                                     <div class="col-md-6">
