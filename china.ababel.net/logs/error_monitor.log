@@ -1,0 +1,96 @@
+{
+    "type": "PHP_ERROR",
+    "severity": "E_WARNING",
+    "message": "Array to string conversion",
+    "file": "\/www\/wwwroot\/china.ababel.net\/app\/Views\/dashboard\/index.php",
+    "line": 82,
+    "timestamp": "2025-08-16 02:58:55",
+    "user_ip": "172.69.67.249",
+    "user_agent": "Mozilla\/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit\/537.36 (KHTML, like Gecko) Chrome\/139.0.0.0 Safari\/537.36",
+    "request_uri": "\/dashboard"
+}
+--------------------------------------------------------------------------------
+{
+    "type": "PHP_ERROR",
+    "severity": "E_WARNING",
+    "message": "Array to string conversion",
+    "file": "\/www\/wwwroot\/china.ababel.net\/app\/Views\/dashboard\/index.php",
+    "line": 82,
+    "timestamp": "2025-08-16 02:59:05",
+    "user_ip": "172.71.190.148",
+    "user_agent": "Mozilla\/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit\/537.36 (KHTML, like Gecko) Chrome\/139.0.0.0 Safari\/537.36",
+    "request_uri": "\/dashboard"
+}
+--------------------------------------------------------------------------------
+{
+    "type": "PHP_ERROR",
+    "severity": "E_WARNING",
+    "message": "Array to string conversion",
+    "file": "\/www\/wwwroot\/china.ababel.net\/app\/Views\/dashboard\/index.php",
+    "line": 82,
+    "timestamp": "2025-08-16 02:59:19",
+    "user_ip": "172.71.190.148",
+    "user_agent": "Mozilla\/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit\/537.36 (KHTML, like Gecko) Chrome\/139.0.0.0 Safari\/537.36",
+    "request_uri": "\/dashboard"
+}
+--------------------------------------------------------------------------------
+{
+    "type": "PHP_ERROR",
+    "severity": "E_WARNING",
+    "message": "Array to string conversion",
+    "file": "\/www\/wwwroot\/china.ababel.net\/app\/Views\/dashboard\/index.php",
+    "line": 82,
+    "timestamp": "2025-08-16 02:59:20",
+    "user_ip": "172.71.190.148",
+    "user_agent": "Mozilla\/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit\/537.36 (KHTML, like Gecko) Chrome\/139.0.0.0 Safari\/537.36",
+    "request_uri": "\/dashboard"
+}
+--------------------------------------------------------------------------------
+{
+    "type": "PHP_ERROR",
+    "severity": "E_WARNING",
+    "message": "Array to string conversion",
+    "file": "\/www\/wwwroot\/china.ababel.net\/app\/Views\/dashboard\/index.php",
+    "line": 82,
+    "timestamp": "2025-08-16 02:59:21",
+    "user_ip": "172.71.190.148",
+    "user_agent": "Mozilla\/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit\/537.36 (KHTML, like Gecko) Chrome\/139.0.0.0 Safari\/537.36",
+    "request_uri": "\/dashboard"
+}
+--------------------------------------------------------------------------------
+{
+    "type": "PHP_ERROR",
+    "severity": "E_WARNING",
+    "message": "Array to string conversion",
+    "file": "\/www\/wwwroot\/china.ababel.net\/app\/Views\/dashboard\/index.php",
+    "line": 82,
+    "timestamp": "2025-08-16 02:59:21",
+    "user_ip": "172.71.190.148",
+    "user_agent": "Mozilla\/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit\/537.36 (KHTML, like Gecko) Chrome\/139.0.0.0 Safari\/537.36",
+    "request_uri": "\/dashboard"
+}
+--------------------------------------------------------------------------------
+{
+    "type": "PHP_ERROR",
+    "severity": "E_WARNING",
+    "message": "Undefined array key \"role\"",
+    "file": "\/www\/wwwroot\/china.ababel.net\/app\/Views\/clients\/_table.php",
+    "line": 72,
+    "timestamp": "2025-08-16 16:24:29",
+    "user_ip": "162.158.23.98",
+    "user_agent": "Mozilla\/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit\/537.36 (KHTML, like Gecko) Chrome\/139.0.0.0 Safari\/537.36",
+    "request_uri": "\/?route=clients"
+}
+--------------------------------------------------------------------------------
+{
+    "type": "PHP_ERROR",
+    "severity": "E_WARNING",
+    "message": "Undefined array key \"role\"",
+    "file": "\/www\/wwwroot\/china.ababel.net\/app\/Views\/clients\/_table.php",
+    "line": 72,
+    "timestamp": "2025-08-16 16:24:30",
+    "user_ip": "162.158.23.98",
+    "user_agent": "Mozilla\/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit\/537.36 (KHTML, like Gecko) Chrome\/139.0.0.0 Safari\/537.36",
+    "request_uri": "\/?route=clients"
+}
+--------------------------------------------------------------------------------

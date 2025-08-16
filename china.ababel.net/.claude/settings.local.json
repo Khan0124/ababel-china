@@ -1,0 +1,35 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mysql:*)",
+      "Bash(grep:*)",
+      "Bash(php:*)",
+      "Bash(find:*)",
+      "Bash(mkdir:*)",
+      "Bash(chmod:*)",
+      "Bash(curl:*)",
+      "Bash(cat:*)",
+      "Bash(systemctl:*)",
+      "Bash(service php8.3-fpm restart:*)",
+      "Bash(/etc/init.d/php-fpm-83:*)",
+      "Bash(cp:*)",
+      "Bash(true)",
+      "Bash(mv:*)",
+      "Bash(chown:*)",
+      "Bash(nginx:*)",
+      "Bash(killall:*)",
+      "Bash(/www/server/nginx/sbin/nginx:*)",
+      "Bash(rm:*)",
+      "WebFetch(domain:china.ababel.net)",
+      "Bash(for f in *.php)",
+      "Bash(do file -i \"$f\")",
+      "Bash(done)"
+    ],
+    "deny": [],
+    "defaultMode": "acceptEdits",
+    "additionalDirectories": [
+      "/www/wwwroot/khxtech.xyz",
+      "/tmp"
+    ]
+  }
+}
